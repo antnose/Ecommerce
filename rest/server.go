@@ -7,10 +7,34 @@ import (
 	"strconv"
 
 	"github.com/antnose/Ecommerce/config"
+	"github.com/antnose/Ecommerce/rest/handlers/product"
+	"github.com/antnose/Ecommerce/rest/handlers/review"
+	"github.com/antnose/Ecommerce/rest/handlers/user"
 	middleware "github.com/antnose/Ecommerce/rest/middlewares"
 )
 
-func Start(cnf config.Config) {
+type Server struct {
+	cnf            config.Config
+	productHandler *product.Handler
+	userHandler    *user.Handler
+	reviewHandler  *review.Handler
+}
+
+func NewServer(
+	cnf config.Config,
+	productHandler *product.Handler,
+	userHandler *user.Handler,
+	reviewHandler *review.Handler,
+) *Server {
+	return &Server{
+		cnf:            cnf,
+		productHandler: productHandler,
+		userHandler:    userHandler,
+		reviewHandler:  reviewHandler,
+	}
+}
+
+func (server *Server) Start() {
 	manager := middleware.NewManager()
 	manager.Use(
 		middleware.Preflight,
@@ -21,9 +45,11 @@ func Start(cnf config.Config) {
 	mux := http.NewServeMux()
 	wrappedMux := manager.WrapMux(mux)
 
-	InitRoutes(mux, manager)
+	server.productHandler.RegisterRoutes(mux, manager)
+	server.userHandler.RegisterRoutes(mux, manager)
+	server.reviewHandler.RegisterRoutes(mux, manager)
 
-	addr := ":" + strconv.Itoa(cnf.HttpPort)
+	addr := ":" + strconv.Itoa(server.cnf.HttpPort)
 	fmt.Println("Server running on port", addr)
 	err := http.ListenAndServe(addr, wrappedMux)
 
