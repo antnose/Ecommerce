@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/antnose/Ecommerce/database"
 	"github.com/antnose/Ecommerce/util"
 )
 
@@ -14,11 +13,15 @@ func (h *Handler) DeleteProduct(w http.ResponseWriter, r *http.Request) {
 	pID, err := strconv.Atoi(productID)
 
 	if err != nil {
-		http.Error(w, "Please provide a valid id", http.StatusBadRequest)
+		util.SendError(w, http.StatusBadRequest, "Please provide a valid idr")
 		return
 	}
 
-	database.Delete(pID)
+	err = h.productRepo.Delete(pID)
+	if err != nil {
+		util.SendError(w, http.StatusInternalServerError, "Internal server error")
 
-	util.SendData(w, "Successfully delete product", 201)
+		return
+	}
+	util.SendData(w, http.StatusOK, "Successfully delete product")
 }

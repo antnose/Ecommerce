@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/antnose/Ecommerce/database"
 	"github.com/antnose/Ecommerce/util"
 )
 

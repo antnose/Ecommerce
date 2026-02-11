@@ -3,6 +3,6 @@ Now we have 6 major problem in our project!
 1. DB (Database Missing)
 2. Need to split route file (Fixed)
 3. Need to split handlers into feature wise (Fixed)
-4. Repetitively loading the configurations from .env file
+4. Repetitively loading the configurations from .env file (Fixed)
 5. Remove tight coupling from configurations (Fixed)
 6. Remove tight coupling from handler to database

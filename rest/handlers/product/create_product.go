@@ -4,21 +4,39 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/antnose/Ecommerce/database"
+	"github.com/antnose/Ecommerce/repo"
 	"github.com/antnose/Ecommerce/util"
 )
 
+type ReqCreateProduct struct {
+	Title       string  `json:"title"`
+	Description string  `json:"description"`
+	Price       float64 `json:"price"`
+	ImgUrl      string  `json:"imageUrl"`
+}
+
 func (h *Handler) CreateProducts(w http.ResponseWriter, r *http.Request) {
-	var newProduct database.Product
+	var req ReqCreateProduct
 
 	decoder := json.NewDecoder(r.Body)
-	err := decoder.Decode(&newProduct)
+	err := decoder.Decode(&req)
 
 	if err != nil {
-		http.Error(w, "Invalid JSON", http.StatusBadRequest)
+		util.SendError(w, http.StatusBadRequest, "Invalid req body")
 		return
 	}
 
-	createdProduct := database.Store(newProduct)
-	util.SendData(w, createdProduct, http.StatusCreated)
+	createdProduct, err := h.productRepo.Create(repo.Product{
+		Title:       req.Title,
+		Description: req.Description,
+		Price:       req.Price,
+		ImgUrl:      req.ImgUrl,
+	})
+
+	if err != nil {
+		util.SendError(w, http.StatusInternalServerError, "Internal server error")
+		return
+	}
+
+	util.SendData(w, http.StatusCreated, createdProduct)
 }
