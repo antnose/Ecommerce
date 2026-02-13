@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/antnose/Ecommerce/repo"
 	"github.com/antnose/Ecommerce/util"
 )
 
@@ -25,7 +26,18 @@ func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	createdUser := newUser.Store()
+	usr, err := h.userRepo.Create(repo.User{
+		FirstName:   req.FirstName,
+		LastName:    req.LastName,
+		Email:       req.Email,
+		Password:    req.Password,
+		IsShopOwner: req.IsShopOwner,
+	})
 
-	util.SendData(w, createdUser, http.StatusCreated)
+	if err != nil {
+		util.SendError(w, http.StatusInternalServerError, "Internal server error")
+		return
+	}
+
+	util.SendData(w, http.StatusCreated, usr)
 }
