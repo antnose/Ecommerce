@@ -7,13 +7,21 @@ import (
 	"github.com/antnose/Ecommerce/util"
 )
 
+type ReqCreateUser struct {
+	FirstName   string `json:"first_name"`
+	LastName    string `json:"last_name"`
+	Email       string `json:"email"`
+	Password    string `json:"password"`
+	IsShopOwner bool   `json:"is_shop_owner"`
+}
+
 func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
-	var newUser database.User
+	var req ReqCreateUser
 	decoder := json.NewDecoder(r.Body)
-	err := decoder.Decode(&newUser)
+	err := decoder.Decode(&req)
 
 	if err != nil {
-		http.Error(w, "Invalid request data", http.StatusBadRequest)
+		util.SendError(w, http.StatusBadRequest, "Invalid request data")
 		return
 	}
 
