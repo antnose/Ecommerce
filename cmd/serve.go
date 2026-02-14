@@ -1,7 +1,11 @@
 package cmd
 
 import (
+	"fmt"
+	"os"
+
 	"github.com/antnose/Ecommerce/config"
+	"github.com/antnose/Ecommerce/infra/db"
 	"github.com/antnose/Ecommerce/repo"
 	"github.com/antnose/Ecommerce/rest"
 	"github.com/antnose/Ecommerce/rest/handlers/product"
@@ -12,7 +16,13 @@ import (
 func Serve() {
 	cnf := config.GetConfig()
 
-	userRepo := repo.NewUserRepo()
+	dbCon, err := db.NewConnection()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	userRepo := repo.NewUserRepo(dbCon)
 	productRepo := repo.NewProductRepo()
 
 	middlewares := middleware.NewMiddlewares(cnf)
