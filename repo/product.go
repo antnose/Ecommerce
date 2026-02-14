@@ -49,7 +49,7 @@ func (r productRepo) Create(p Product) (*Product, error) {
 		RETURNING id
 	`
 
-	row := r.db.QueryRow(query, p.Title, p.Title, p.Description, p.Price, p.ImgUrl)
+	row := r.db.QueryRow(query, p.Title, p.Description, p.Price, p.ImgUrl)
 
 	err := row.Scan(&p.ID)
 	if err != nil {
@@ -93,7 +93,7 @@ func (r *productRepo) List() ([]*Product, error) {
 			title,
 			description,
 			price,
-			img_url,
+			img_url
 		FROM products
 	`
 
@@ -106,14 +106,19 @@ func (r *productRepo) List() ([]*Product, error) {
 
 }
 
-func (r *productRepo) Update(product Product) (*Product, error) {
-	for idx, p := range r.productList {
-		if p.ID == product.ID {
-			r.productList[idx] = &product
-		}
+func (r *productRepo) Update(p Product) (*Product, error) {
+	query := `
+		UPDATE products
+		SET title=$1, description=$2, price=$3, img_url=$4
+		WHERE id = $5
+	`
+
+	_, err := r.db.Exec(query, p.Title, p.Description, p.Price, p.ImgUrl, p.ID)
+	if err != nil {
+		return nil, err
 	}
 
-	return &product, nil
+	return &p, nil
 }
 
 func (r *productRepo) Delete(id int) error {
