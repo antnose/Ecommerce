@@ -8,9 +8,10 @@ import (
 	"github.com/antnose/Ecommerce/infra/db"
 	"github.com/antnose/Ecommerce/repo"
 	"github.com/antnose/Ecommerce/rest"
-	"github.com/antnose/Ecommerce/rest/handlers/product"
-	"github.com/antnose/Ecommerce/rest/handlers/user"
+	prdcthandler "github.com/antnose/Ecommerce/rest/handlers/product"
+	usrHandler "github.com/antnose/Ecommerce/rest/handlers/user"
 	middleware "github.com/antnose/Ecommerce/rest/middlewares"
+	"github.com/antnose/Ecommerce/user"
 )
 
 func Serve() {
@@ -22,14 +23,24 @@ func Serve() {
 		os.Exit(1)
 	}
 
+	err = db.MigrateDB(dbCon, "./migrations")
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	// repos
 	productRepo := repo.NewProductRepo(dbCon)
 	userRepo := repo.NewUserRepo(dbCon)
 
+	// domains
+	usrSvc := user.NewService(userRepo)
+
 	middlewares := middleware.NewMiddlewares(cnf)
 
-	productHandler := product.NewHandler(middlewares, productRepo)
+	productHandler := prdcthandler.NewHandler(middlewares, productRepo)
 
-	userHandler := user.NewHandler(cnf, userRepo)
+	userHandler := usrHandler.NewHandler(cnf, usrSvc)
 
 	server := rest.NewServer(
 		cnf,
