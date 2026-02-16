@@ -6,6 +6,7 @@ import (
 
 	"github.com/antnose/Ecommerce/config"
 	"github.com/antnose/Ecommerce/infra/db"
+	"github.com/antnose/Ecommerce/product"
 	"github.com/antnose/Ecommerce/repo"
 	"github.com/antnose/Ecommerce/rest"
 	prdcthandler "github.com/antnose/Ecommerce/rest/handlers/product"
@@ -35,10 +36,12 @@ func Serve() {
 
 	// domains
 	usrSvc := user.NewService(userRepo)
+	prdctSvc := product.NewService(productRepo)
 
 	middlewares := middleware.NewMiddlewares(cnf)
 
-	productHandler := prdcthandler.NewHandler(middlewares, productRepo)
+	// Handlers
+	productHandler := prdcthandler.NewHandler(middlewares, prdctSvc)
 
 	userHandler := usrHandler.NewHandler(cnf, usrSvc)
 

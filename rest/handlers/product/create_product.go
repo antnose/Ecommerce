@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/antnose/Ecommerce/repo"
+	"github.com/antnose/Ecommerce/domain"
 	"github.com/antnose/Ecommerce/util"
 )
 
@@ -26,7 +26,7 @@ func (h *Handler) CreateProducts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	createdProduct, err := h.productRepo.Create(repo.Product{
+	createdProduct, err := h.svc.Create(domain.Product{
 		Title:       req.Title,
 		Description: req.Description,
 		Price:       req.Price,

@@ -5,12 +5,12 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/antnose/Ecommerce/repo"
+	"github.com/antnose/Ecommerce/domain"
 	"github.com/antnose/Ecommerce/util"
 )
 
 type ReqUpdateProduct struct {
-	Title       string  `json:title`
+	Title       string  `json:"title"`
 	Description string  `json:"description"`
 	Price       float64 `json:"price"`
 	ImgUrl      string  `json:"imageUrl"`
@@ -35,7 +35,7 @@ func (h *Handler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err = h.productRepo.Update(repo.Product{
+	_, err = h.svc.Update(domain.Product{
 		ID:          pId,
 		Title:       req.Title,
 		Description: req.Description,
